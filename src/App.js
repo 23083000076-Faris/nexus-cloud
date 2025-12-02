@@ -42,7 +42,7 @@ const Login = ({ onLoginSuccess }) => {
     script.onload = () => {
       if (window.google) {
         window.google.accounts.id.initialize({
-          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || 'YOUR_CLIENT_ID_HERE',
+          client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID || '62960888632-lf8l0vfm3k9hcsoj2nonp1gon433jjsn.apps.googleusercontent.com',
           callback: handleCredentialResponse,
         });
 
@@ -80,19 +80,6 @@ const Login = ({ onLoginSuccess }) => {
           ) : (
             <div id="googleSignInButton"></div>
           )}
-        </div>
-
-        <div className="login-info">
-          <p><strong>Catatan:</strong> Untuk mengaktifkan Google OAuth:</p>
-          <ol>
-            <li>Buat project di Google Cloud Console</li>
-            <li>Aktifkan Google+ API</li>
-            <li>Buat OAuth 2.0 credentials</li>
-            <li>Tambahkan ke file .env:</li>
-          </ol>
-          <code className="env-example">
-            REACT_APP_GOOGLE_CLIENT_ID=your_client_id_here
-          </code>
         </div>
       </div>
     </div>
