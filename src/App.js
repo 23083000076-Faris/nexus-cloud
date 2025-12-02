@@ -5,6 +5,7 @@ import './styles.css';
 const Login = ({ onLoginSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     // Load Google OAuth library
     const script = document.createElement('script');
