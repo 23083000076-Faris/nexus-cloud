@@ -5,7 +5,32 @@ import './styles.css';
 const Login = ({ onLoginSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleCredentialResponse = React.useCallback((response) => {
+    setIsLoading(true);
+
+    // Decode JWT token
+    try {
+      const token = response.credential;
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+
+      const userData = JSON.parse(jsonPayload);
+
+      setTimeout(() => {
+        onLoginSuccess(userData);
+        setIsLoading(false);
+      }, 500);
+
+    } catch (error) {
+      console.error('Error parsing token:', error);
+      setIsLoading(false);
+      alert('Login gagal. Silakan coba lagi.');
+    }
+  }, [onLoginSuccess]);
+
   useEffect(() => {
     // Load Google OAuth library
     const script = document.createElement('script');
@@ -34,35 +59,11 @@ const Login = ({ onLoginSuccess }) => {
     };
 
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
     };
-  }, []);
-
-  const handleCredentialResponse = (response) => {
-    setIsLoading(true);
-
-    // Decode JWT token
-    try {
-      const token = response.credential;
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-
-      const userData = JSON.parse(jsonPayload);
-
-      setTimeout(() => {
-        onLoginSuccess(userData);
-        setIsLoading(false);
-      }, 500);
-
-    } catch (error) {
-      console.error('Error parsing token:', error);
-      setIsLoading(false);
-      alert('Login gagal. Silakan coba lagi.');
-    }
-  };
+  }, [handleCredentialResponse]);
 
   return (
     <div className="login-container">
@@ -79,6 +80,19 @@ const Login = ({ onLoginSuccess }) => {
           ) : (
             <div id="googleSignInButton"></div>
           )}
+        </div>
+
+        <div className="login-info">
+          <p><strong>Catatan:</strong> Untuk mengaktifkan Google OAuth:</p>
+          <ol>
+            <li>Buat project di Google Cloud Console</li>
+            <li>Aktifkan Google+ API</li>
+            <li>Buat OAuth 2.0 credentials</li>
+            <li>Tambahkan ke file .env:</li>
+          </ol>
+          <code className="env-example">
+            REACT_APP_GOOGLE_CLIENT_ID=your_client_id_here
+          </code>
         </div>
       </div>
     </div>
